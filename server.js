@@ -45,5 +45,34 @@ app.post('/bandas', (req, res) => {
 
 });
 
+// middleware exist
+const bandaExist = (req, res, next) => {
+
+    const nombre = req.query.nombre;
+    const exist = 'SELECT * FROM bandas WHERE nombre = ?';
+
+    sequelize.query(exist, {replacements: [nombre], type: sequelize.QueryTypes.SELECT})
+        .then(data => {
+            if (!data.length) {
+                return res.status(404).json({error: 'No se encontro dicha banda'})
+            }
+            return next();
+        }).catch(e => {
+            return res.status(404).json({error: 'Algo salio mal..'})
+        })
+}
+
+app.delete('/bandas', bandaExist, (req, res) => {
+
+    const nombre = req.query.nombre;
+    const myQuery = `DELETE FROM bandas WHERE nombre = ?`;
+
+    sequelize.query(myQuery, {replacements: [nombre]})
+        .then((data) => {
+            res.json({status: 'deleted'});
+        }).catch( e => console.error('Algo salio mal', e));
+
+});
+
 
 app.listen(4000, (req, res) => console.log('Escuchando por el 4000'));
