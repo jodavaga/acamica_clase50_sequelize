@@ -31,6 +31,20 @@ app.get('/bandas', async (req, res) => {
     }
 });
 
+app.post('/bandas', (req, res) => {
+
+    const query = 'INSERT INTO bandas (nombre, integrantes, fecha_inicio, fecha_separacion, pais) VALUES (?, ?, ?, ?, ?)';
+
+    const {nombre, integrantes, fecha_inicio, fecha_separacion, pais} = req.body;
+
+    sequelize.query(query, {replacements: [nombre, integrantes, fecha_inicio, fecha_separacion, pais] })
+        .then((response) => {
+
+            res.json({status: 'Insertado', banda: req.body});
+
+        }).catch((e) => console.error(e));
+
+});
 
 
 app.listen(4000, (req, res) => console.log('Escuchando por el 4000'));
